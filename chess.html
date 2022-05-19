@@ -29,7 +29,7 @@ from js import console
 
 def draw(board, draw_text=False):
     if not draw_text:
-        b_svg = chess.svg.board(board=board, size=400)
+        b_svg = chess.svg.board(board=board, size=700)
         pyscript.write('svg', b_svg)
     else:
         pyscript.write('svg', '')
@@ -37,34 +37,39 @@ def draw(board, draw_text=False):
         for row in str(board).split('\n'):
             pyscript.write('text', row, append=True)
 
+pgn = open_url("/kasparov-deep-blue-1997.pgn")
+first_game = chess.pgn.read_game(pgn)
+started = False
+board = first_game.board()
+draw(board)
 
 async def watch(*args, **kwargs):
-    pgn = open_url("/kasparov-deep-blue-1997.pgn")
-    first_game = chess.pgn.read_game(pgn)
-    board = first_game.board()
+    global started
+    if not started:
+        started = True
 
-    title = first_game.headers["Event"] + " - " + first_game.headers["Site"]
-    pyscript.write('title', title)
+        title = first_game.headers["Event"] + " - " + first_game.headers["Site"]
+        pyscript.write('title', title)
 
-    players = "White: " + first_game.headers["White"] + " | Black: " + first_game.headers["Black"]
-    pyscript.write('players', players)
+        players = "White: " + first_game.headers["White"] + " | Black: " + first_game.headers["Black"]
+        pyscript.write('players', players)
 
-    for move in first_game.mainline_moves():
-        board.push(move)
-        # reverse of what you might expect ...
-        white_turn = board.turn == chess.BLACK
-        if white_turn:
-            turn = 'White'
-        else:
-            turn = 'Black'
-        try:
-            mv = first_game.board().san(move)
-        except:
-            mv = "&nbsp;"
-            console.log('UCI of problem move: ' + move.uci())
-        pyscript.write('move', turn + "'s move: " + mv)
-        draw(board)
-        await asyncio.sleep(3)
+        for move in first_game.mainline_moves():
+            board.push(move)
+            # reverse of what you might expect ...
+            white_turn = board.turn == chess.BLACK
+            if white_turn:
+                turn = 'White'
+            else:
+                turn = 'Black'
+            try:
+                mv = first_game.board().san(move)
+            except:
+                mv = "&nbsp;"
+                console.log('UCI of problem move: ' + move.uci())
+            pyscript.write('move', turn + "'s move: " + mv)
+            draw(board)
+            await asyncio.sleep(3)
 
         </py-script>
     </head>
@@ -73,27 +78,36 @@ async def watch(*args, **kwargs):
             <br>
             <h1 class="display-1">Chess Match Viewer</h1>
             <br>
+            <div class="row"><h3 class="display-6">How about a nice game of chess?</h3></div>
+            <br>
+            <br>
             <div class="row">
-                <div class="col">
-                    <div class="row"><h3 class="display-6">How about a nice game of chess?</h3></div><br><br>
-                    <div class="d-grid gap-2"><button type="button" class="btn btn-primary btn-lg" id="click-button" pys-onClick="watch">Watch</button><br><br><br></div>
-                    <div class="row">
-                        <div id="title" class="fs-5 text">&nbsp;</div>
-                        <div id="players">&nbsp;</div>
-                        <p id="move" class="fs-3 text">&nbsp;</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div id="svg"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" viewBox="0 0 390 390" width="400" height="400"><rect x="0" y="0" width="390" height="390" fill="#212121" /></svg></div>
-                    <pre id="text"></pre>
-                    
-                </div>
-                <div class="col align-self-end">
-                    <h3 class="display-6">Made in <a href="https://www.python.org/">Python</a></h3>
-                    <h3 class="display-6">With <a href="https://pyscript.net/">PyScript</a></h3>
-                    <h3 class="display-6">and <a href="https://python-chess.readthedocs.io/en/latest/index.html">Python-Chess</a></h3>
-                </div>
+                <div id="svg"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" viewBox="0 0 390 390" width="700" height="700"><rect x="0" y="0" width="390" height="390" fill="#212121" /></svg></div>
+                <pre id="text"></pre>
             </div>
+            <br>
+            <div class="row">
+                <div id="title" class="fs-3 text">&nbsp;</div>
+                <br>
+                <br>
+                <div id="players" class="fs-4 text">&nbsp;</div>
+                <br>
+                <br>
+                <p id="move" class="fs-2 text">&nbsp;</p>
+            </div>
+            <br>
+            <div class="row">
+                <div style="width: 725px; height: 80px" class="d-grid gap-2"><button type="button" class="btn btn-primary fs-3 text" id="click-button" pys-onClick="watch">Watch</button></div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="row">
+                    <h3 class="display-6">Made in <a href="https://www.python.org/">Python</a></h3><br><br>
+                    <h3 class="display-6">With <a href="https://pyscript.net/">PyScript</a> and <a href="https://python-chess.readthedocs.io/en/latest/index.html">Python-Chess</a></h3>
+            </div>
+            <br>
         </div>
     </body>
 </html>
