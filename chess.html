@@ -38,7 +38,7 @@ def draw(board, draw_text=False):
             pyscript.write('text', row, append=True)
 
 
-async def play(*args, **kwargs):
+async def watch(*args, **kwargs):
     pgn = open_url("/kasparov-deep-blue-1997.pgn")
     first_game = chess.pgn.read_game(pgn)
     board = first_game.board()
@@ -64,29 +64,29 @@ async def play(*args, **kwargs):
             console.log('UCI of problem move: ' + move.uci())
         pyscript.write('move', turn + "'s move: " + mv)
         draw(board)
-        await asyncio.sleep(5)
+        await asyncio.sleep(3)
 
         </py-script>
     </head>
     <body>
         <div class="container">
             <br>
-            <h1 class="display-1">Greetings Professor Falken</h1>
+            <h1 class="display-1">Chess Match Viewer</h1>
             <br>
             <div class="row">
-                <div class="col align-self-start">
-                    <h3 class="display-6">How about a nice game of chess?</h3>
-                    <br>
-                    <br>
-                    <br>
-                    <div class="d-grid gap-2"><button type="button" class="btn btn-primary btn-lg" id="click-button" pys-onClick="play">Play</button></div>
+                <div class="col">
+                    <div class="row"><h3 class="display-6">How about a nice game of chess?</h3></div><br><br>
+                    <div class="d-grid gap-2"><button type="button" class="btn btn-primary btn-lg" id="click-button" pys-onClick="watch">Watch</button><br><br><br></div>
+                    <div class="row">
+                        <div id="title" class="fs-5 text">&nbsp;</div>
+                        <div id="players">&nbsp;</div>
+                        <p id="move" class="fs-3 text">&nbsp;</p>
+                    </div>
                 </div>
-                <div class="col align-self-center">
+                <div class="col">
                     <div id="svg"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" viewBox="0 0 390 390" width="400" height="400"><rect x="0" y="0" width="390" height="390" fill="#212121" /></svg></div>
                     <pre id="text"></pre>
-                    <div id="title">&nbsp;</div>
-                    <div id="players">&nbsp;</div>
-                    <div id="move">&nbsp;</div>
+                    
                 </div>
                 <div class="col align-self-end">
                     <h3 class="display-6">Made in <a href="https://www.python.org/">Python</a></h3>
