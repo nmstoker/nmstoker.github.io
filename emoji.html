@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji">
+    <style type="text/css">
+      body {
+        font-family: 'Noto Color Emoji', sans-serif;
+        margin: 40px;
+        line-height: 2em;
+      }
+      h1 {font-size: 2em;}
+      h4 {font-size: 1.2em;}
+      a {
+        text-decoration: underline;
+        color: #0d6efd;}
+      ul {
+        list-style: disc;
+        margin-left: 0;
+        padding-left: 30px;}
+      .non-emoji {font-family: sans-serif;} /* this if for cases where some characters, eg numbers,
+                                               seem to get treated as part of Noto Color Emoji and
+                                               therefore have odd spacing;
+
+                                               no longer needed in the example as I now write "10"
+                                               as "ten" in the text, but maybe it'll help someone! */
+      #random {
+        font-size: 1.4em;
+        margin-top:  20px;
+        margin-left: 20px;
+      }
+    </style>
+    <title>Emoji in PyScript</title>
+</head>
+<body>
+    <py-env>
+        - emoji
+    </py-env>
+    <py-script>
+import emoji
+import asyncio
+import random
+from itertools import cycle
+
+def random_emojis(count):
+    # get the names of the English emoji
+    d = emoji.unicode_codes.EMOJI_UNICODE_ENGLISH.keys()
+
+    # stick count of them together and "emojize"
+    msg = emoji.emojize('&nbsp;&nbsp;'.join(random.sample(list(d), count)))
+    return msg
+
+
+globe_list = ['globe_showing_Europe-Africa', 'globe_showing_Americas', 'globe_showing_Asia-Australia']
+globe_cycle = cycle(globe_list)
+for globe in globe_cycle:
+    msg = emoji.emojize(f"Hello, :{globe}:! Isn't PyScript great :thumbs_up:")
+    pyscript.write('main', msg)
+    # so the random 10 do not update too quickly to appreciate...
+    if globe == globe_list[0]:
+        rnd = random_emojis(10)
+        pyscript.write('random', rnd)
+    await asyncio.sleep(1.4)
+
+
+    </py-script>
+    <h1>Emoji in PyScript</h1>
+    <br>
+    <div id="main">&nbsp;</div>
+    <br>
+    <p class="non-emoji">Here is a random selection of ten emojis:</p>
+    <div id="random">&nbsp;</div>
+    <br>
+    <br>
+    <h4>Uses:</h4>
+    <ul>
+        <li>The <a href="https://pypi.org/project/emoji/">emoji package</a> to give PyScript some emoji handling</li>
+        <li>The <a href="https://github.com/googlefonts/noto-emoji">Noto Color Emoji font</a> to inject some colour 🌈!</li>
+        <ul><li><em>See Google CSS API <a href="https://developers.google.com/fonts/docs/css2">for additional details</a></em></li></ul>
+    </ul>
+    <br>
+    <br>
+    <br>
+    <p>Made by <a href="https://twitter.com/nmstoker">@nmstoker</a></p>
+</body>
+</html> 
