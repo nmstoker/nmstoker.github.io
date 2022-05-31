@@ -76,6 +76,10 @@ async def watch(*args, **kwargs):
                 await asyncio.sleep(3)
             except StopIteration:
                 pyscript.write('move', 'End of game')
+                await asyncio.sleep(10)
+                started = False
+                await toggle_button()
+                await _new_game(None)
     else:
         started = False
 
