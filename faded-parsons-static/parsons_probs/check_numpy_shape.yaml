@@ -1,0 +1,21 @@
+problem_name: check_numpy_shape
+
+problem_description: |
+  <code>check_numpy_shape</code>
+    returns True for an numpy array of shape (3,3)
+
+  <pre><code>
+  >>> import numpy as np
+  >>> a = np.array([[1, 0, 0], [0, 1, 2], [0, 1, 3]])
+  >>> check_numpy_shape(a)
+  True
+  >>> b = np.array([[1, 0], [0, 1], [0, 1]])
+  >>> check_numpy_shape(b)
+  False
+  </code></pre>
+
+code_lines: |
+  def check_numpy_shape(np_array): #0given
+  return np.!BLANK(!BLANK) == (3,3)
+
+test_fn: check_numpy_shape
