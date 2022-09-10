@@ -358,7 +358,7 @@
 				codeLine.code.startsWith('p <input')
 			) {
 				document.getElementById(codeLine.id).style.backgroundColor =
-					'lightblue';
+					'#00c0ff';
 			}
 		});
 	};
@@ -383,17 +383,17 @@
 		});
 		// Get current indents
 		var element = this.options.sortableId.querySelector('ul');
-		var backgroundColor = 'rgb(255, 255, 170)';
+		var backgroundColor = 'rgb(255, 255, 135)';
 		var backgroundPosition = '';
 		for (var i = 1; i <= maxIndent + 1; i++) {
 			backgroundPosition += i * this.options.x_indent + 'px 0, ';
 		}
 
 		element.style.background =
-			'linear-gradient(#ee0, #ee0) no-repeat border-box, '
+			'linear-gradient(#caca00, #caca00) no-repeat border-box, '
 				.repeat(maxIndent)
 				.slice(0) +
-			'repeating-linear-gradient(0,#ee0,#ee0 10px,' +
+			'repeating-linear-gradient(0,#caca00,#caca00 10px,' +
 			backgroundColor +
 			' 10px, ' +
 			backgroundColor +

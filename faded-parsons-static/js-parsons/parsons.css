@@ -1,4 +1,9 @@
-/** Stylesheet for the puzzles */
+/** Styling for pages overall **/
+body {
+    background-color: #ebebeb;
+}
+
+/** Styling for the puzzles **/
 .line-number {
     float: right !important;
     font-size: 80%;
@@ -16,14 +21,17 @@
     width: 58%;
     margin-left: 2%;}
 .sortable-code ul {
+    color: #333;
     font-size: 120%;
     font-family: monospace;
     list-style: none;
-    background-color: #efefff;
+    background-color: #dedede;
     padding-bottom: 60px;
-    padding-left: 0;
+    padding-left: 3px;
+    padding-right: 4px;
     margin-left: 0;
-    border: 1px solid #efefff;;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
 }
 .sortable-code ul:empty {
   padding-bottom: 80px;
@@ -35,11 +43,11 @@ ul.output {
     background-color: #FFA;
 }
 .sortable-code li {
-    -moz-border-radius:10px;
-    -webkit-border-radius:10px;
-    border-radius: 10px;
-    background-color:#EFEFEF;
-    border:1px solid lightgray;
+    -moz-border-radius:6px;
+    -webkit-border-radius:6px;
+    border-radius: 6px;
+    background-color:#efefef;
+    border:1.4px solid #bcbcbc;
     padding:2px;
     /* Keep difference of 10 to respect padding specified just above */
     padding-left: 30px;
@@ -47,6 +55,7 @@ ul.output {
     margin-top: 5px;
     overflow: hidden;
     cursor: move;
+    box-shadow: 1px 2px 5px 0px rgba(190,190,190,0.6);
 }
 .sortable-code li span::before {
     content: "\200b";
@@ -139,7 +148,7 @@ li.correctPosition, .testcase.pass {
 /** For input within parsons blocks */
 .text-box {
     border-width: 0px;
-    border-bottom: solid 1px black;
+    border-bottom: solid 2px #6c757d;
     width:80px;
     min-width:80px;
     padding: 5px;

@@ -4006,7 +4006,7 @@ function prepareCode(submittedCode, codeHeader) {
 	finalCode.push('doctest.testmod(verbose=True)');
 	finalCode = finalCode.join('\n');
 
-	console.log("Final Code", finalCode);
+	//console.log("Final Code", finalCode)
 
 	return {
 		status: 'success',
