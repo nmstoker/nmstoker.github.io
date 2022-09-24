@@ -3874,21 +3874,21 @@ function set(key, value) {
 	}
 }
 
-function findNextUnindentedLine(lines, start) {
+// function findNextUnindentedLine(lines, start) {
 	/*
     Finds the next piece of unindented code in the file. Ignores empty lines and lines
     that start with a space or tab. Returns len(lines) if no unindented line found.
     */
-	let lineNum = start;
-	while (lineNum < lines.length) {
-		const line = lines[lineNum];
-		if (!(line == '' || line[0] == ' ' || line[0] == '\t' || line[0] == '\n')) {
-			break;
-		}
-		lineNum++;
-	}
-	return lineNum;
-}
+// 	let lineNum = start;
+// 	while (lineNum < lines.length) {
+// 		const line = lines[lineNum];
+// 		if (!(line == '' || line[0] == ' ' || line[0] == '\t' || line[0] == '\n')) {
+// 			break;
+// 		}
+// 		lineNum++;
+// 	}
+// 	return lineNum;
+// }
 
 function countDocstringLines(lines) {
 	let startLine = -1;
@@ -3952,50 +3952,34 @@ function cleanupDoctestResults(resultsStr) {
 	return keptLines.join('\n');
 }
 
-function prepareCode(submittedCode, codeHeader) {
+function prepareCode(submittedCode, codeHeader, probDescription, testFn) {
 	submittedCode += '\n';
+	//console.log('codeHeader is:\n' + codeHeader);
+	//console.log('submittedCode is:\n' + submittedCode);
 	let lines = codeHeader.split('\n');
 	const startLine = countDocstringLines(lines);
 	const codeLines = submittedCode.split('\n');
-	if (!(codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import'))) {
-		return {
-			status: 'fail',
-			header: 'Error running tests',
-			details: 'First code line must be `def`, `class` or `import` declaration',
-		};
-	}
-	// Remove function def or class declaration statement, its relied on elsewhere
-	// (NS) TODO: clean up this ugly work-around
-	if (codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import')) {
-		codeLines.shift();
-	}
-	// second time around it's again the first line we want to look at...
-	if (codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import')) {
-		codeLines.shift();
-	}
-	//console.log("Remaining lines", codeLines)
+	// if (!(codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import'))) {
+	// 	return {
+	// 		status: 'fail',
+	// 		header: 'Error running tests',
+	// 		details: 'First code line must be `def`, `class` or `import` declaration',
+	// 	};
+	// }
 
-	let line = findNextUnindentedLine(codeLines, 0);
-	if (line != codeLines.length) {
-		return {
-			status: 'fail',
-			header: 'Error running tests',
-			details:
-				'All lines in a function or class definition should be indented at least once. It looks like you have a line that has no indentation.',
-		};
-	}
-	const linesToPreserve = lines.slice(0, startLine);
-	const endOfReplaceLines = findNextUnindentedLine(lines, startLine);
-	const extraLinesToPreserve = lines.slice(endOfReplaceLines);
+	const linesToPreserve = lines;
 	let finalCode = [];
 	linesToPreserve.forEach((line) => {
 		finalCode.push(line);
 	});
 	codeLines.forEach((line) => {
-		finalCode.push(line);
-	});
-	extraLinesToPreserve.forEach((line) => {
-		finalCode.push(line);
+		if (line.includes('def ' + testFn)) {
+			finalCode.push(line);
+			// TODO: make the indentation look nicer here
+			finalCode.push('    """\n' + probDescription + '\n"""');
+		} else {
+			finalCode.push(line);			
+		}
 	});
 	// Redirects stdout so we can return it
 	finalCode.push('import sys');
@@ -4006,7 +3990,7 @@ function prepareCode(submittedCode, codeHeader) {
 	finalCode.push('doctest.testmod(verbose=True)');
 	finalCode = finalCode.join('\n');
 
-	//console.log("Final Code", finalCode)
+	//console.log("Final Code\n" + finalCode)
 
 	return {
 		status: 'success',
@@ -4151,7 +4135,7 @@ class TestResultsElement extends s {
 		return $`<div class="testcase ${this.status}">
 						<span class="msg">${this.header}</span>
 						</div>
-						<pre><code>${this.details}</code></pre></div>
+						<div class="output">${this.details}</div></div>
 					</div>`;
 	}
 }
@@ -4209,7 +4193,7 @@ class ProblemElement extends s {
 						<div class="card-header">
 							<h3>Problem Statement</h3>
 						</div>
-						<div class="card-body">${o$2(this.description)}</div>
+						<div class="card-body description">${o$2(this.description)}</div>
 					</div>
 				</div>
 			</div>
@@ -4325,15 +4309,15 @@ function initWidget() {
 	const fetchConf = fetch(`parsons_probs/${problemName}.yaml`).then((res) =>
 		res.text()
 	);
-	const fetchFunc = fetch(`parsons_probs/${problemName}.py`).then((res) =>
-		res.text()
-	);
-	const allData = Promise.all([fetchConf, fetchFunc]);
+	const allData = Promise.all([fetchConf]);
 
 	allData.then((res) => {
-		const [config, func] = res;
+		const [config] = res;
 		const configYaml = jsYaml.load(config);
 		const probDescription = configYaml['problem_description'];
+		const providedCode = configYaml['provided_code'] || '';
+		const testFn = configYaml['test_fn'];
+		
 		let codeLines =
 			configYaml['code_lines'] +
 			"\nprint('DEBUG:', !BLANK)" +
@@ -4348,10 +4332,10 @@ function initWidget() {
 		probEl.setAttribute('name', problemName);
 		probEl.setAttribute('description', probDescription);
 		probEl.setAttribute('codeLines', codeLines);
-		probEl.setAttribute('codeHeader', func);
+		probEl.setAttribute('codeHeader', providedCode);
 		probEl.setAttribute('runStatus', 'Loading Pyodide...');
 		probEl.addEventListener('run', (e) => {
-			handleSubmit(e.detail.code, e.detail.repr, func);
+			handleSubmit(e.detail.code, e.detail.repr, providedCode, probDescription, testFn);
 		});
 		probEl.setAttribute('enableRun', 'enableRun');
 		probEl.setAttribute('runStatus', '');
@@ -4359,8 +4343,8 @@ function initWidget() {
 	});
 }
 
-async function handleSubmit(submittedCode, reprCode, codeHeader) {
-	let testResults = prepareCode(submittedCode, codeHeader);
+async function handleSubmit(submittedCode, reprCode, codeHeader, probDescription, testFn) {
+	let testResults = prepareCode(submittedCode, codeHeader, probDescription, testFn);
 
 	if (testResults.code) {
 		try {

@@ -1,17 +1,15 @@
-problem_name: Clothing
+test_fn: Clothing
 
 problem_description: |
-  <p>The <code>Clothing</code> class represents pieces of clothing in a closet.
+  The <code>Clothing</code> class represents pieces of clothing in a closet.
   tracking the color, category, and clean/dirty state.
-  </p>
-  <p>Each <code>Clothing</code> instance should have three instance variables:
+  
+  Each <code>Clothing</code> instance should have three instance variables:
   <code>color</code>, <code>category</code>, and <code>is_clean</code>.
-  </p>
+  
   The <code>wear</code> method should set <code>is_clean</code> to <code>False</code>,
   while the <code>clean</code> method should set <code>is_clean</code> to <code>Truue</code>.
-  </p>
-
-  <pre><code>
+  
   >>> blue_shirt = Clothing("shirt", "blue")
   >>> blue_shirt.category
   'shirt'
@@ -25,7 +23,6 @@ problem_description: |
   >>> blue_shirt.clean()
   >>> blue_shirt.is_clean
   True
-  </code></pre>
 
 
 code_lines: |
@@ -40,5 +37,3 @@ code_lines: |
 
   def clean(!BLANK):
   !BLANK = True
-
-test_fn: Clothing

@@ -1,10 +1,8 @@
-problem_name: sum_grid
+test_fn: sum_grid
 
 problem_description: |
-  <code>sum_grid</code>
-    returns the sum of all the numbers in the given grid, a 2-D list of numbers.
+  Return the sum of all the numbers in the given grid, a 2-D list of numbers.
 
-  <pre><code>
   >>> grid1 = [
   ...     [5, 1, 6],   # 12
   ...     [10, 4, 1],  # 15
@@ -19,7 +17,6 @@ problem_description: |
   ... ]
   >>> sum_grid(grid2)
   49
-  </code></pre>
 
 code_lines: |
   def sum_grid(grid): #0given
@@ -28,5 +25,3 @@ code_lines: |
   for !BLANK in !BLANK:
   sum += !BLANK
   return sum
-
-test_fn: sum_grid

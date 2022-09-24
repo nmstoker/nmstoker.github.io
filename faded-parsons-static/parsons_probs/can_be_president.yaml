@@ -1,12 +1,10 @@
-problem_name: can_be_president
+test_fn: can_be_president
 
 problem_description: |
-  <code>can_be_president</code>
-    returns whether someone can be US president based on age and residency.
+  Return whether someone can be US president based on age and residency.
     According to the US constitution, a presidential candidate must be at least
     35 years old and have been a US resident for at least 14 years.
 
-  <pre><code>
   >>> can_be_president(30, 10)
   False
   >>> can_be_president(36, 10)
@@ -21,12 +19,9 @@ problem_description: |
   True
   >>> can_be_president(35, 30)
   True
-  </code></pre>
 
 code_lines: |
   def can_be_president(age, residency): #0given
   age_qualifies = !BLANK
   res_qualifies = !BLANK
   return age_qualifies !BLANK res_qualifies
-
-test_fn: can_be_president

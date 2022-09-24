@@ -92,13 +92,15 @@ li.incorrectPosition, .testcase.fail, .testcase.error {
     /* background-color: #FFBABA;
     border:1px solid red;
     */
-    border: 1px solid yellow;
-    background-color:#FFFF66;
+    border: 1.5px solid #e4ab00;
+    background-color:#ffc107;
+    color: #343a40;
 }
 
 li.correctPosition, .testcase.pass {
-    background-color: #DFF2BF;
-    border:1px solid green;
+    background-color: #28a745;
+    border:1.5px solid #1d8a36;
+    color:  white;
 }
 
 .red_error {
@@ -108,7 +110,11 @@ li.correctPosition, .testcase.pass {
     font-weight: bold;
 }
 
-.testcase { padding: 10px; margin-bottom: 10px;}
+.testcase {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
 .testcase .msg { font-weight: bold; }
 .testcase .error { color: red;}
 .testcase .feedback { font-weight: bolder;}
@@ -126,6 +132,20 @@ li.correctPosition, .testcase.pass {
     margin: 5px;
     padding: 5px;
 }
+
+.output {
+    white-space: pre;
+    font-family: sans-serif;
+    margin: 5px;
+    padding: 5px;
+
+}
+
+.description
+{
+    white-space: pre;
+}
+
 /** For styling the toggleable elements */
 .jsparson-toggle {
     padding: 0 15px;
@@ -152,9 +172,12 @@ li.correctPosition, .testcase.pass {
     width:80px;
     min-width:80px;
     padding: 5px;
+    padding-left: 8px;
     font-size: 13.3333px;
     font-family: monospace;
     background-color: white;
+    box-shadow:inset 1px 2px 5px rgba(220,220,220,0.6);
+    text-shadow: 1px 2px 5px rgba(190,190,190,0.6);
 }
 
 .text-box:focus{

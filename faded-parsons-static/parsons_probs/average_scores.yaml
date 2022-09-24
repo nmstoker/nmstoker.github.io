@@ -1,17 +1,14 @@
-problem_name: average_scores
+test_fn: average_scores
 
 problem_description: |
-  <code>average_scores</code>
-    returns the average of the provided scores.
+  Return the average of the provided scores.
 
-  <pre><code>
   >>> average_scores([10, 20])
   15.0
   >>> average_scores([90, 80, 70])
   80.0
   >>> average_scores([8.9, 7.2])
   8.05
-  </code></pre>
 
 code_lines: |
   def average_scores(scores): #0given
@@ -19,5 +16,3 @@ code_lines: |
   for !BLANK in !BLANK:
   total += !BLANK
   return !BLANK / !BLANK
-
-test_fn: average_scores

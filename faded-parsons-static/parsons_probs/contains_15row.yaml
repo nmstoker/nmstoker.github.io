@@ -1,11 +1,9 @@
-problem_name: contains_15row
+test_fn: contains_15row
 
 problem_description: |
-  <code>contains_15row</code>
-    takes an input of a 2-dimensional list of numbers
-    and returns true if any of the rows add up to 15.
+  Take an input of a 2-dimensional list of numbers
+    and return true if any of the rows add up to 15.
 
-  <pre><code>
   >>> grid1 = [
   ...     [5, 1, 6],   # 12
   ...     [10, 4, 1],  # 15!!
@@ -20,7 +18,6 @@ problem_description: |
   ... ]
   >>> contains_15row(grid2)
   False
-  </code></pre>
 
 code_lines: |
   def contains_15row(grid): #0given
@@ -31,5 +28,3 @@ code_lines: |
   if sum !BLANK:
   return True
   return False
-
-test_fn: contains_15row

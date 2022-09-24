@@ -19,15 +19,15 @@ export function initWidget() {
 	const fetchConf = fetch(`parsons_probs/${problemName}.yaml`).then((res) =>
 		res.text()
 	);
-	const fetchFunc = fetch(`parsons_probs/${problemName}.py`).then((res) =>
-		res.text()
-	);
-	const allData = Promise.all([fetchConf, fetchFunc]);
+	const allData = Promise.all([fetchConf]);
 
 	allData.then((res) => {
-		const [config, func] = res;
+		const [config] = res;
 		const configYaml = yaml.load(config);
 		const probDescription = configYaml['problem_description'];
+		const providedCode = configYaml['provided_code'] || '';
+		const testFn = configYaml['test_fn'];
+		
 		let codeLines =
 			configYaml['code_lines'] +
 			"\nprint('DEBUG:', !BLANK)" +
@@ -42,10 +42,10 @@ export function initWidget() {
 		probEl.setAttribute('name', problemName);
 		probEl.setAttribute('description', probDescription);
 		probEl.setAttribute('codeLines', codeLines);
-		probEl.setAttribute('codeHeader', func);
+		probEl.setAttribute('codeHeader', providedCode);
 		probEl.setAttribute('runStatus', 'Loading Pyodide...');
 		probEl.addEventListener('run', (e) => {
-			handleSubmit(e.detail.code, e.detail.repr, func);
+			handleSubmit(e.detail.code, e.detail.repr, providedCode, probDescription, testFn);
 		});
 		probEl.setAttribute('enableRun', 'enableRun');
 		probEl.setAttribute('runStatus', '');
@@ -53,8 +53,8 @@ export function initWidget() {
 	});
 }
 
-async function handleSubmit(submittedCode, reprCode, codeHeader) {
-	let testResults = prepareCode(submittedCode, codeHeader);
+async function handleSubmit(submittedCode, reprCode, codeHeader, probDescription, testFn) {
+	let testResults = prepareCode(submittedCode, codeHeader, probDescription, testFn);
 
 	if (testResults.code) {
 		try {

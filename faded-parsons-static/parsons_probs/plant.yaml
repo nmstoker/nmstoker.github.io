@@ -1,17 +1,15 @@
-problem_name: Plant
+test_fn: Plant
 
 problem_description: |
-  <p>The <code>Plant</code> class is used by a plant nursery
+  The <code>Plant</code> class is used by a plant nursery
   to track what plants they have in inventory
   and how many they have of each plant.
-  </p>
-  <p>Each <code>Plant</code> instance should have three instance variables:
+  
+  Each <code>Plant</code> instance should have three instance variables:
   <code>common_name</code>, <code>latin_name</code>, and <code>inventory</code>.
   The <code>update_inventory</code> method is responsible for increasing
   the <code>inventory</code> of an instance.
-  </p>
 
-  <pre><code>
   >>> milkweed = Plant("Narrow-leaf milkweed", "Asclepias fascicularis")
   >>> milkweed.common_name
   'Narrow-leaf milkweed'
@@ -25,8 +23,6 @@ problem_description: |
   >>> milkweed.update_inventory(3)
   >>> milkweed.inventory
   5
-  </code></pre>
-
 
 code_lines: |
   class Plant: #0given
@@ -38,5 +34,3 @@ code_lines: |
 
   def update_inventory(self, amount): #1given
   self.!BLANK += !BLANK
-
-test_fn: Plant

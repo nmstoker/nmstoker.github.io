@@ -1,18 +1,18 @@
-function findNextUnindentedLine(lines, start) {
+// function findNextUnindentedLine(lines, start) {
 	/*
     Finds the next piece of unindented code in the file. Ignores empty lines and lines
     that start with a space or tab. Returns len(lines) if no unindented line found.
     */
-	let lineNum = start;
-	while (lineNum < lines.length) {
-		const line = lines[lineNum];
-		if (!(line == '' || line[0] == ' ' || line[0] == '\t' || line[0] == '\n')) {
-			break;
-		}
-		lineNum++;
-	}
-	return lineNum;
-}
+// 	let lineNum = start;
+// 	while (lineNum < lines.length) {
+// 		const line = lines[lineNum];
+// 		if (!(line == '' || line[0] == ' ' || line[0] == '\t' || line[0] == '\n')) {
+// 			break;
+// 		}
+// 		lineNum++;
+// 	}
+// 	return lineNum;
+// }
 
 function countDocstringLines(lines) {
 	let startLine = -1;
@@ -76,50 +76,34 @@ function cleanupDoctestResults(resultsStr) {
 	return keptLines.join('\n');
 }
 
-export function prepareCode(submittedCode, codeHeader) {
+export function prepareCode(submittedCode, codeHeader, probDescription, testFn) {
 	submittedCode += '\n';
+	//console.log('codeHeader is:\n' + codeHeader);
+	//console.log('submittedCode is:\n' + submittedCode);
 	let lines = codeHeader.split('\n');
 	const startLine = countDocstringLines(lines);
 	const codeLines = submittedCode.split('\n');
-	if (!(codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import'))) {
-		return {
-			status: 'fail',
-			header: 'Error running tests',
-			details: 'First code line must be `def`, `class` or `import` declaration',
-		};
-	}
-	// Remove function def or class declaration statement, its relied on elsewhere
-	// (NS) TODO: clean up this ugly work-around
-	if (codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import')) {
-		codeLines.shift();
-	}
-	// second time around it's again the first line we want to look at...
-	if (codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import')) {
-		codeLines.shift();
-	}
-	//console.log("Remaining lines", codeLines)
+	// if (!(codeLines[0].includes('def') || codeLines[0].includes('class') || codeLines[0].includes('import'))) {
+	// 	return {
+	// 		status: 'fail',
+	// 		header: 'Error running tests',
+	// 		details: 'First code line must be `def`, `class` or `import` declaration',
+	// 	};
+	// }
 
-	let line = findNextUnindentedLine(codeLines, 0);
-	if (line != codeLines.length) {
-		return {
-			status: 'fail',
-			header: 'Error running tests',
-			details:
-				'All lines in a function or class definition should be indented at least once. It looks like you have a line that has no indentation.',
-		};
-	}
-	const linesToPreserve = lines.slice(0, startLine);
-	const endOfReplaceLines = findNextUnindentedLine(lines, startLine);
-	const extraLinesToPreserve = lines.slice(endOfReplaceLines);
+	const linesToPreserve = lines;
 	let finalCode = [];
 	linesToPreserve.forEach((line) => {
 		finalCode.push(line);
 	});
 	codeLines.forEach((line) => {
-		finalCode.push(line);
-	});
-	extraLinesToPreserve.forEach((line) => {
-		finalCode.push(line);
+		if (line.includes('def ' + testFn)) {
+			finalCode.push(line);
+			// TODO: make the indentation look nicer here
+			finalCode.push('    """\n' + probDescription + '\n"""');
+		} else {
+			finalCode.push(line);			
+		}
 	});
 	// Redirects stdout so we can return it
 	finalCode.push('import sys');
@@ -130,7 +114,7 @@ export function prepareCode(submittedCode, codeHeader) {
 	finalCode.push('doctest.testmod(verbose=True)');
 	finalCode = finalCode.join('\n');
 
-	console.log("Final Code", finalCode)
+	//console.log("Final Code\n" + finalCode)
 
 	return {
 		status: 'success',

@@ -1,23 +1,22 @@
-problem_name: greater_num
+# test_fn is the function that will be run to test the student's proposed solution
+test_fn: greater_num
 
+# problem_description is displayed on the problem page and provides the doctest details used to test the student's
+# proposed solution
 problem_description: |
-  <code>greater_num</code>
-    returns whichever number is highest of the two supplied numbers.
+  Return whichever number is highest of the two supplied numbers.
 
-  <pre><code>
   >>> greater_num(45, 10)
   45
   >>> greater_num(-1, 30)
   30
   >>> greater_num(20, 20)
   20
-  </code></pre>
 
+# code_lines are used to generate the code blocks that the student may include in their proposed solution
 code_lines: |
   def greater_num(num1, num2): #0given
   if !BLANK:
   return !BLANK
   else:
   return !BLANK
-
-test_fn: greater_num

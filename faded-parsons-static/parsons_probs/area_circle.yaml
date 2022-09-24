@@ -1,11 +1,13 @@
-problem_name: area_circle
+# test_fn is the function that will be run to test the student's proposed solution
+test_fn: area_circle 
 
+# problem_description is displayed on the problem page and provides the doctest details used to test the student's
+# proposed solution
 problem_description: |
-  <code>area_circle</code>
-    returns a string stating the area of a circle with the given radius
-    area is stated to a given number of decimals with a default value of 2
+  Return a string stating the area of a circle with the given radius
+  
+  State area to a given number of decimals with a default value of 2
 
-  <pre><code>
   >>> area_circle(5)
   'Circle area is 78.54'
   >>> area_circle(5,4)
@@ -16,11 +18,26 @@ problem_description: |
   'Circle area is 0.00'
   >>> area_circle(-4)
   'Circle area is 50.27'
-  </code></pre>
 
+# load_packages calls micropip to install a package or wheel
+# allows built-in Pyodide packages (eg numpy) and wheels from arbitrary URLs
+# note Pyodide may undergo changes around URL functionality, so could break
+# load_packages:
+#   - numpy
+#   - pandas
+
+# provided_code is any code that is given for use in the solution
+# it will be available for the doctests used to test the student's
+# proposed solution
+provided_code: |
+  def example():
+      return 'Example text'
+
+# code_lines are used to generate the code blocks that
+# the student may include in their proposed solution
 code_lines: |
   import math #0given
   def area_circle(radius, decimals!BLANK): #0given
   a = math.!BLANK * (radius ** 2)
   return f"Circle area is {a:.{!BLANK}f}"
-test_fn: area_circle 
+

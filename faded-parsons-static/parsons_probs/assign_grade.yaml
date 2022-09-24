@@ -1,11 +1,9 @@
-problem_name: assign_grade
+test_fn: assign_grade
 
 problem_description: |
-  <code>assign_grade</code>
-    returns a letter grade for the numeric score based on the grade bins of:
+  Return a letter grade for the numeric score based on the grade bins of:
      "A" (90-100), "B" (80-89), "C" (70-79), "D" (65-69), or "F" (0-64)
 
-  <pre><code>
   >>> assign_grade(95)
   'A'
   >>> assign_grade(90)
@@ -26,7 +24,6 @@ problem_description: |
   'F'
   >>> assign_grade(0)
   'F'
-  </code></pre>
 
 code_lines: |
   def assign_grade(score): #0given
@@ -40,6 +37,4 @@ code_lines: |
   return "D"
   else:
   return "F"
-
-test_fn: assign_grade
 

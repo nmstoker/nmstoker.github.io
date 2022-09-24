@@ -1,18 +1,16 @@
-problem_name: count_evens
+test_fn: count_evens
 
 problem_description: |
-  <code>count_evens</code>
-    counts the number of even numbers between a given start number and given end number.
+  Count the number of even numbers between a given start number and given end number.
     Count should include the start or end if they are even.
 
-  <pre><code>
+
   >>> count_evens(2, 2)
   1
   >>> count_evens(-2, 52)
   28
   >>> count_evens(237, 500)
   132
-  </code></pre>
 
 code_lines: |
   def count_evens(start, end): #0given
@@ -23,5 +21,3 @@ code_lines: |
   num_evens !BLANK
   current_num !BLANK
   return num_evens
-
-test_fn: count_evens

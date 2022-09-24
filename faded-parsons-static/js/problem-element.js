@@ -56,7 +56,7 @@ export class ProblemElement extends LitElement {
 						<div class="card-header">
 							<h3>Problem Statement</h3>
 						</div>
-						<div class="card-body">${unsafeHTML(this.description)}</div>
+						<div class="card-body description">${unsafeHTML(this.description)}</div>
 					</div>
 				</div>
 			</div>
