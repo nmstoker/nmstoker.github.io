@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Levenshtein Matching Tool</title>
+    <!-- Include AG Grid CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
+    
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet"> 
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 8px;
+            font-size: 15px;
+            background-color: #F3F3F3;
+        }
+
+        #table1 {
+            flex: 7;
+            padding: 0px;
+            margin-right: 8px;
+        }
+
+        #table2 {
+            flex: 4;
+            padding: 0px;
+        }
+
+        @media screen and (min-width: 90rem) {
+            body {
+                margin: 50px;
+            }
+            #table1 {
+                margin-right: 20px;
+            }
+        }
+
+        .bg-light-green {
+            background-color: #2AC23B;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bg-mid-blue {
+            background-color: #0074D9;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bg-orange {
+            background-color: #EE382E;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bg-lighter-grey {
+            background-color: #DDDDDD; /* Use the lighter grey color */
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 158px;
+            margin: 2px;
+            border-radius: 2px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #thresholdComboBox {
+            padding: 9px;
+            font-size: 15px;
+            width: 120px;
+            margin: 8px;
+        }
+
+        select {
+            padding: 5px;
+        }
+
+        .wrap {
+          display: inline-block;
+          white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Levenshtein Matching Tool</h1>
+    <!-- Button to set selections -->
+    <button id="setSelectionsButton">Set Selections</button>
+
+    <!-- Add a button for resetting match results -->
+    <button id="resetMatchResultsButton">Reset Match Results</button>
+    &nbsp;
+    <!-- Add a vertical divider -->
+    <span style="border-left:2px solid #AAA;height:20px"></span>
+    &nbsp;
+    <!-- Threshold ComboBox -->
+    <span class="wrap">
+        <label for="thresholdComboBox">Threshold: </label>
+        <select id="thresholdComboBox">
+            <option value="0">Exact (0)</option>
+            <option value="2">Low (2)</option>
+            <option value="4" selected>Medium (4)</option>
+            <option value="8">High (8)</option>
+            <option value="9999">Unlimited</option>
+        </select>
+    </span>
+    <!-- Add a vertical divider -->
+    <span style="border-left:2px solid #AAA;height:20px"></span>
+    &nbsp;
+    <span class="wrap">
+        <!-- Add a button for exporting to clipboard -->
+        <button id="exportButton">Export to Clipboard</button>
+        &nbsp;
+        <!-- Add a checkbox for including column headers -->
+        <label>Include&nbsp;Headers&nbsp;<input type="checkbox" id="includeHeaders" checked></label>
+    </span>
+    <br>
+    <br>
+    <br>
+    <!-- Add a link to populate example data -->
+    <a href="#" id="populateExampleDataLink1">Populate Example Data 1</a>&nbsp;&nbsp;
+    <a href="#" id="populateExampleDataLink2">Populate Example Data 2</a><br><br>
+
+    <div style="display: flex;">
+        <!-- Left Table -->
+        <div id="table1">
+            <h2>Search Section</h2>
+            <div id="grid1" class="ag-theme-alpine" style="height: 300px; width: 100%;"></div>
+        </div>
+        <!-- Right Table -->
+        <div id="table2">
+            <h2>Match List</h2>
+            <div id="grid2" class="ag-theme-alpine" style="height: 300px; width: 100%;"></div>
+        </div>
+    </div>
+    <h2>About this tool</h2>
+    <p>This Levenshtein Matching Tool is a simple tool to efficiently match a potentially noisy user input list with a clean "match list" (optionally including an associated lookup value or ID).</p>
+    <p><em><strong>To get a quick idea of how it works, try out the example data links above and click on "Set Selections", then play around with the various options.</strong></em></p>
+    <p>It makes use of the <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein Distance</a>, matching items in the user input list with the closest items in the "match list".  The closest match is automatically selected in a drop-down list next to the user input item, showing any optional lookup value/ID in the following column and highlighting the distance of the selected item, colour coding it:</p>
+    <ul>
+        <li><span class="bg-light-green"><strong>&nbsp;Green&nbsp;</strong></span> for an exact match (distance zero)</li>
+        <li><span class="bg-mid-blue"><strong>&nbsp;Blue&nbsp;&nbsp;&nbsp;</strong></span> for items within a designated threshold</li>
+        <li><span class="bg-orange"><strong>&nbsp;Red&nbsp;&nbsp;&nbsp;&nbsp;</strong></span> for any entries the user has manually selected that are above the threshold</li>
+        <li><span class="bg-lighter-grey"><strong>&nbsp;Grey&nbsp;&nbsp;&nbsp;</strong></span> where no selection is made automatically, which happens when there is no match below the threshold</li>
+    </ul>
+    <p>The tool's focus is on desktop experience as it works closely with the clipboard for adding items to the two lists.</p>
+    <p>Click within either of the two tables to paste data into that table.  Use the Export to Clipboard button to copy out the selected matches and associated details.</p>
+    <p>The page operates as a static page with all processing happening locally, so it can be easily hosted online, <a href="https://about.nmstoker.com/lmt.html">as here</a>, or as a local file you open in your browser.</p>
+    <p>Source code and license details are available here: <a href="https://github.com/nmstoker/lmt">https://github.com/nmstoker/lmt</a></p>
+
+    <!-- Include AG Grid scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+    <script>
+        var choicesData = []; // Initialize choicesData as an empty array
+        var gridOptions1; // Define gridOptions1 for the left table
+        var gridOptions2; // Define gridOptions2 for the right table
+        var thresholdComboBox = document.getElementById("thresholdComboBox");
+
+        function updateChoicesData() {
+            // Get the values from the first column of grid2
+            var grid2Data = gridOptions2.api.getModel().rowsToDisplay;
+            choicesData = grid2Data.map(function (row) {
+                return row.data.col1;
+            });
+
+            // Add "Not selected" as an option
+            choicesData.unshift("Not selected");
+
+            // Update ComboBox options in grid1
+            gridOptions1.api.refreshCells({
+                force: true,
+                columns: ['col2', 'col4'], // Refresh col4 as well
+            });
+        }
+
+        function getComboBoxCellRenderer() {
+            function comboBoxCellRenderer(params) {
+                var cellValue = params.value; // Value from the cell's data
+
+                // Create a <select> element (ComboBox) with options from choicesData
+                var selectElement = document.createElement("select");
+
+                // Populate the ComboBox options based on choicesData array
+                choicesData.forEach(function (option) {
+                    var optionElement = document.createElement("option");
+                    optionElement.textContent = option;
+                    optionElement.value = option;
+                    selectElement.appendChild(optionElement);
+                });
+
+                // Set the selected value in the ComboBox
+                selectElement.value = cellValue;
+
+                // Add an event listener to update the cell data when the ComboBox value changes
+                selectElement.addEventListener("change", function (event) {
+                    var selectedValue = event.target.value;
+
+                    if (selectedValue === "Not selected") {
+                        // If "Not selected" is chosen, don't update the data in the second column
+                        // and only update the data in the third and fourth columns to empty values
+                        params.data.col2 = "Not selected"; // Set to "Not selected" here
+                        params.data.col3 = "";
+                        params.data.col4 = "";
+                    } else {
+                        params.data.col2 = selectedValue; // Update the data in the second column
+
+                        // Find the corresponding value in grid2's data
+                        var grid2Data = gridOptions2.api.getModel().rowsToDisplay;
+                        var correspondingValue = "";
+                        grid2Data.forEach(function (row2) {
+                            if (row2.data.col1 === selectedValue) {
+                                correspondingValue = row2.data.col2;
+                            }
+                        });
+
+                        // Update the data in the third column
+                        params.data.col3 = correspondingValue;
+
+                        // Calculate and update the Levenshtein Distance in the fourth column
+                        var col1Value = params.data.col1;
+                        var distance = levenshteinDistance(col1Value, selectedValue);
+                        params.data.col4 = distance;
+                    }
+
+                    // Refresh the grid to reflect the updated data, including col4
+                    gridOptions1.api.refreshCells({
+                        columns: ['col2', 'col3', 'col4'],
+                    });
+                });
+
+                return selectElement;
+            }
+
+            return comboBoxCellRenderer;
+        }
+
+        // Function to calculate Levenshtein distance between two strings
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+
+            var matrix = [];
+
+            // Initialize the matrix
+            for (var i = 0; i <= b.length; i++) {
+                matrix[i] = [i];
+            }
+
+            for (var j = 0; j <= a.length; j++) {
+                matrix[0][j] = j;
+            }
+
+            // Calculate Levenshtein distance
+            for (var i = 1; i <= b.length; i++) {
+                for (var j = 1; j <= a.length; j++) {
+                    var cost = a[j - 1] === b[i - 1] ? 0 : 1;
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j] + 1,      // Deletion
+                        matrix[i][j - 1] + 1,      // Insertion
+                        matrix[i - 1][j - 1] + cost // Substitution
+                    );
+                }
+            }
+
+            return matrix[b.length][a.length];
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Define column definitions for the left table
+            var columnDefs1 = [
+                { headerName: 'User Input', field: 'col1' },
+                {
+                    headerName: 'Match Selected',
+                    field: 'col2',
+                    cellRenderer: 'comboBoxCellRenderer',
+                },
+                {
+                    headerName: 'Lookup Value/ID',
+                    field: 'col3'
+                },
+                {
+                    headerName: 'Distance',
+                    field: 'col4',
+                    width: 88,
+                    cellStyle: {textAlign: 'center'},
+                    valueGetter: function (params) {
+                        if (params.data.col2 === "Not selected") {
+                            return "";
+                        } else {
+                            return params.data.col4;
+                        }
+                    },
+                    cellClass: function (params) {
+                        // Define cell class based on conditions
+                        var threshold = parseInt(thresholdComboBox.value); // Get selected threshold value
+                        if (params.data.col2 === "Not selected") {
+                            return 'bg-lighter-grey';
+                        } else if (params.data.col4 === undefined || params.data.col4 === "") {
+                            return 'bg-lighter-grey'; // Use lighter grey for empty Levenshtein Distance
+                        } else if (params.data.col4 === 0) {
+                            return 'bg-light-green'; // Use light green for Levenshtein Distance of 0
+                        } else if (params.data.col4 <= threshold) {
+                            return 'bg-mid-blue';
+                        } else {
+                            return 'bg-orange';
+                        }
+                    },
+                },
+            ];
+
+            // Define column definitions for the right table
+            var columnDefs2 = [
+                { headerName: 'Match List Item', field: 'col1' }, // Updated column name
+                { headerName: 'Lookup Value/ID (Optional)', field: 'col2' } // Updated column name
+            ];
+
+            // Create AG Grid instances for left and right tables
+            gridOptions1 = {
+                columnDefs: columnDefs1,
+                domLayout: 'autoHeight',
+                rowData: [],
+                components: {
+                    comboBoxCellRenderer: getComboBoxCellRenderer(),
+                },
+            };
+
+            gridOptions2 = {
+                columnDefs: columnDefs2,
+                domLayout: 'autoHeight',
+                rowData: [],
+            };
+
+            // Initialize AG Grids
+            var grid1 = new agGrid.Grid(document.querySelector('#grid1'), gridOptions1);
+            var grid2 = new agGrid.Grid(document.querySelector('#grid2'), gridOptions2);
+
+            // Add event listeners to grid2's data to trigger updates in grid1
+            gridOptions2.api.addEventListener('modelUpdated', function () {
+                updateChoicesData();
+
+                // Update the data in grid1's third and fourth columns based on ComboBox selections
+                gridOptions1.api.forEachNode(function (node) {
+                    var selectedValue = node.data.col2;
+                    var correspondingValue = "";
+                    var grid2Data = gridOptions2.api.getModel().rowsToDisplay;
+                    grid2Data.forEach(function (row2) {
+                        if (row2.data.col1 === selectedValue) {
+                            correspondingValue = row2.data.col2;
+                        }
+                    });
+                    node.data.col3 = correspondingValue;
+
+                    // Calculate and update the Levenshtein Distance in the fourth column
+                    var col1Value = node.data.col1;
+                    var distance = levenshteinDistance(col1Value, selectedValue);
+                    node.data.col4 = distance;
+                });
+
+                // Refresh the grid to reflect the updated data
+                gridOptions1.api.refreshCells({
+                    columns: ['col2', 'col3', 'col4'],
+                });
+            });
+
+            // Listen for the "pasteEnd" event in grid2 to trigger updates
+            gridOptions2.api.addEventListener('pasteEnd', function (event) {
+                updateChoicesData();
+            });
+
+            // Button click event to set selections based on Levenshtein distance
+            var setSelectionsButton = document.getElementById("setSelectionsButton");
+            setSelectionsButton.addEventListener("click", function () {
+                var threshold = parseInt(thresholdComboBox.value); // Get selected threshold value
+
+                // Iterate through grid1's rows
+                gridOptions1.api.forEachNode(function (node) {
+                    var col1Value = node.data.col1;
+                    var currentSelection = node.data.col2;
+
+                    // Check for empty values and treat them like "Not selected"
+                    if (!currentSelection || currentSelection === "Not selected") {
+                        var closestMatch = "Not selected"; // Default to "Not selected"
+                        var minDistance = Number.MAX_VALUE;
+
+                        // Iterate through ComboBox options
+                        choicesData.forEach(function (option) {
+                            var distance = levenshteinDistance(col1Value, option);
+
+                            // If a closer match is found within the threshold, update closestMatch and minDistance
+                            if (distance <= threshold && distance < minDistance) {
+                                closestMatch = option;
+                                minDistance = distance;
+                            }
+                        });
+
+                        // Set the ComboBox selection to the closest match or "Not selected" if it exceeds the threshold
+                        node.setDataValue("col2", closestMatch);
+
+                        // Find the corresponding value in grid2's data
+                        var correspondingValue = "";
+                        var grid2Data = gridOptions2.api.getModel().rowsToDisplay;
+                        grid2Data.forEach(function (row2) {
+                            if (row2.data.col1 === closestMatch) {
+                                correspondingValue = row2.data.col2;
+                            }
+                        });
+
+                        // Update the data in the third column
+                        node.setDataValue("col3", correspondingValue);
+
+                        // Calculate and update the Levenshtein Distance in the fourth column
+                        var distance = levenshteinDistance(col1Value, closestMatch);
+                        node.setDataValue("col4", distance);
+                    }
+                });
+
+                // Refresh the grid to reflect the updated data
+                gridOptions1.api.refreshCells({
+                    columns: ['col2', 'col3', 'col4'],
+                });
+            });
+
+            // Handle table click events
+            document.getElementById('table1').addEventListener('click', function () {
+                activeTable = 'grid1';
+            });
+
+            document.getElementById('table2').addEventListener('click', function () {
+                activeTable = 'grid2';
+            });
+
+            // Paste data into the active table
+            document.addEventListener('paste', function (event) {
+                if (activeTable) {
+                    var clipboardData = event.clipboardData || window.clipboardData;
+                    var pastedData = clipboardData.getData('text/plain');
+
+                    if (activeTable === 'grid1') {
+                        // for the left grid we only accept a single column of data
+                        var rowData = pastedData.split('\n').map(function (row) {
+                            var columns = row.split('\t');
+                            return { col1: columns[0] };
+                        });
+                        gridOptions1.api.setRowData(rowData);
+                    } else if (activeTable === 'grid2') {
+                        var rowData = pastedData.split('\n').map(function (row) {
+                            return { col1: row.split('\t')[0], col2: row.split('\t')[1] };
+                        });
+                        gridOptions2.api.setRowData(rowData);
+                        updateChoicesData();
+                    }
+                }
+            });
+
+        });
+
+        // Get the export button and checkbox elements
+        var exportButton = document.getElementById("exportButton");
+        var includeHeadersCheckbox = document.getElementById("includeHeaders");
+
+        // Add a click event listener to the export button
+        exportButton.addEventListener("click", function () {
+            // Create a new textarea element to hold the exported data
+            var textarea = document.createElement("textarea");
+            textarea.style.position = "fixed";
+            textarea.style.top = "0";
+            textarea.style.left = "0";
+            textarea.style.width = "1px";
+            textarea.style.height = "1px";
+            textarea.style.opacity = "0";
+
+            // Get the selected rows from the left-hand table
+            var selectedRows = [];
+            gridOptions1.api.forEachNodeAfterFilterAndSort(function (node) {
+                selectedRows.push([node.data.col1, node.data.col2, node.data.col3]);
+            });
+
+            // Include or exclude column headers based on the checkbox state
+            if (includeHeadersCheckbox.checked) {
+                selectedRows.unshift(["User Input", "Match Selected", "Lookup Value/ID"]);
+            }
+
+            // Set the textarea value with the selected data
+            textarea.value = selectedRows.map(function (row) {
+                return row.join("\t"); // Use tab as the delimiter
+            }).join("\n");
+
+            // Append the textarea to the document and select its content
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            // Copy the selected data to the clipboard
+            document.execCommand("copy");
+
+            // Remove the textarea element from the document
+            document.body.removeChild(textarea);
+
+            // Display a confirmation message (you can customize this part)
+            alert("Matching selections have been copied to the clipboard");
+        });
+
+        // Get the reset match results button element
+        var resetMatchResultsButton = document.getElementById("resetMatchResultsButton");
+
+        // Add a click event listener to the reset button
+        resetMatchResultsButton.addEventListener("click", function () {
+            // Iterate through grid1's rows
+            gridOptions1.api.forEachNode(function (node) {
+                // Reset the values in the second, third, and fourth columns
+                node.setDataValue("col2", "");
+                node.setDataValue("col3", "");
+                node.setDataValue("col4", "");
+            });
+
+            // Refresh the grid to reflect the updated data
+            gridOptions1.api.refreshCells({
+                columns: ['col2', 'col3', 'col4'],
+            });
+        });
+
+        // Get the first populate example data link element
+        var populateExampleDataLink1 = document.getElementById("populateExampleDataLink1");
+
+        // Add a click event listener to the link
+        populateExampleDataLink1.addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent the default link behavior
+
+            // Example data for the left-hand table
+            var leftTableData = [
+                { col1: "Gentle Regrets"},
+                { col1: "State Anxious"},
+                { col1: "Brideshead Visited"},
+                { col1: "Uncertainty"},
+            ];
+
+            // Example data for the right-hand table
+            var rightTableData = [
+                { col1: "Gentle Regrets", col2: "Roger Scruton" },
+                { col1: "Status Anxiety", col2: "Alain de Botton" },
+                { col1: "The Utility of Force", col2: "General Sir Rupert Smith" },
+                { col1: "American Pastoral", col2: "Philip Roth" },
+                { col1: "Brideshead Revisited", col2: "Evelyn Waugh" },
+                { col1: "On Certainty", col2: "Ludwig Wittgenstein" },
+            ];
+
+            // Set the example data in the left and right tables
+            gridOptions1.api.setRowData(leftTableData);
+            gridOptions2.api.setRowData(rightTableData);
+        });
+
+        // Get the second populate example data link element
+        var populateExampleDataLink2 = document.getElementById("populateExampleDataLink2");
+
+        // Add a click event listener to the link
+        populateExampleDataLink2.addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent the default link behavior
+
+            // Example data for the left-hand table
+            var leftTableData = [
+                { col1: "Hon Solu"},
+                { col1: "Ciao Becca"},
+                { col1: "Luke Spywalker"},
+                { col1: "Princess Leia"},
+                { col1: "Dark Father"},
+            ];
+
+            // Example data for the right-hand table
+            var rightTableData = [
+                { col1: "Han Solo", col2: "Harrison Ford" },
+                { col1: "Darth Vader", col2: "David Prowse" },
+                { col1: "Chewbacca", col2: "Peter Mayhew" },
+                { col1: "Princess Leia", col2: "Carrie Fisher" },
+                { col1: "Luke Skywalker", col2: "Mark Hamill" },
+                { col1: "Admiral Piett", col2: "Kenneth Colley" },
+                { col1: "Grand Moff Tarkin", col2: "Peter Cushing" },
+            ];
+
+            // Set the example data in the left and right tables
+            gridOptions1.api.setRowData(leftTableData);
+            gridOptions2.api.setRowData(rightTableData);
+        });
+    </script>
+</body>
+</html>
+
