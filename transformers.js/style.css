@@ -84,7 +84,7 @@ header {
     )
     border-box; /* extends to outer border edges */
   
-	border: 5px solid rgba(128,128,228,.3);
+	border: 5px solid rgba(128,128,228,0.3);
 
 	&:hover {
 		animation-play-state: running;
