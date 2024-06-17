@@ -74,8 +74,8 @@ header {
     /* Background colors don’t work with `background-origin`, so use a gradient. */
     linear-gradient(
         to bottom,
-        oklch(1.0 1.0 240 / 1.0),
-        oklch(1.0 1.0 240 / 1.0)
+        oklch(1 1 1),
+        oklch(1 1 1)
       )
       padding-box, /* ends at inner border edges */
     conic-gradient(
